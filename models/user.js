@@ -26,6 +26,39 @@ const userSchema = new Schema(
   }
 );
 
+userSchema.virtual("orders", {
+  ref: "orders",
+  localField: "_id",
+  foreignField: "orderedBy",
+});
+
+// Virtual field for cart
+userSchema.virtual("cart", {
+  ref: "cart",
+  localField: "_id",
+  foreignField: "cartOf",
+  justOne: true, // Since typically, a user has only one cart
+});
+
+// Virtual field for wishlist
+userSchema.virtual("wishlist", {
+  ref: "wishlists",
+  localField: "_id",
+  foreignField: "wishlistOf",
+  justOne: true, // Assuming one wishlist per user
+});
+
+// Virtual field for addresses
+userSchema.virtual("addresses", {
+  ref: "address",
+  localField: "_id",
+  foreignField: "addressOf",
+});
+
+// Enable virtuals in JSON output
+userSchema.set("toObject", { virtuals: true });
+userSchema.set("toJSON", { virtuals: true });
+
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await compare(enteredPassword, this.password);
 };
