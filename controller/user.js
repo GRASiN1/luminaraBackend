@@ -1,4 +1,6 @@
 const User = require("../models/user");
+const Cart = require("../models/cart");
+const wishlist = require("../models/wishlist");
 const { generateToken } = require("../services/authentication");
 
 async function handleCreateUser(req, res) {
@@ -21,8 +23,9 @@ async function handleCreateUser(req, res) {
   if (populatedUser) {
     res.status(201).json({
       _id: populatedUser._id,
-      name: populatedUser.fullName,
+      fullName: populatedUser.fullName,
       email: populatedUser.email,
+      role: populatedUser.role,
       cart: populatedUser.cart,
       wishlist: populatedUser.wishlist,
       orders: populatedUser.orders,
@@ -42,17 +45,22 @@ async function handleCreateUser(req, res) {
 
 async function handleUserLogin(req, res) {
   const { email, password } = req.body;
-  const user = await User.findOne({ email: email })
-    .populate("orders")
-    .populate("cart")
-    .populate("wishlist")
-    .populate("addresses");
-
+  let user;
+  if (req.headers.authorization?.split("Bearer ")[1]) {
+    user = await User.findOne({ email: email })
+      .populate("orders")
+      .populate("cart")
+      .populate("wishlist")
+      .populate("addresses");
+  } else {
+    user = await User.findOne({ email: email });
+  }
   if (user && (await user.matchPassword(password))) {
     return res.status(201).json({
       _id: user._id,
-      name: user.fullName,
+      fullName: user.fullName,
       email: user.email,
+      role: user.role,
       cart: user.cart,
       wishlist: user.wishlist,
       orders: user.orders,
