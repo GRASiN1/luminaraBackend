@@ -21,15 +21,7 @@ router.delete(
   restrictTo(["ADMIN"]),
   handleDeleteProductById
 );
-router.get(
-  "/getAllProducts",
-  restrictTo(["NORMAL", "ADMIN"]),
-  handleGetAllProducts
-);
-router.get(
-  "/getProductById/:id",
-  restrictTo(["NORMAL", "ADMIN"]),
-  handleGetProductById
-);
+router.get("/getAllProducts", handleGetAllProducts);
+router.get("/getProductById/:id", handleGetProductById);
 
 module.exports = router;
